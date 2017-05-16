@@ -1,0 +1,23 @@
+machine:
+  services:
+    - docker
+
+test:
+  override:
+    - docker run --rm -it -v $(pwd):/home/rust/src ekidd/rust-musl-builder cargo test
+
+deployment:
+  release:
+    tag: /v[0-9]+(\.[0-9]+)*/
+    commands:
+      - docker run --rm -it -v $(pwd):/home/rust/src ekidd/rust-musl-builder cargo build --release
+      - docker build -t pottava/regex-replacer:latest .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push pottava/regex-replacer:latest
+  staging:
+    branch: master
+    commands:
+      - docker run --rm -it -v $(pwd):/home/rust/src ekidd/rust-musl-builder cargo build --release
+      - docker build -t pottava/regex-replacer:dev .
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - docker push pottava/regex-replacer:dev
