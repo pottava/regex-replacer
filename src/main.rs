@@ -31,6 +31,7 @@ fn main() {
     let replace_delimiter = env_variable("REPLACE_DELIMITER", "=");
     let files = env_variable("FILES", "");
     let replaces = env_variable("REPLACE", "");
+    println!("Replaces: {} (delimiter: {})", replaces, replace_delimiter);
 
     for path in files.split(&delimiter) {
         match read_file(&path) {
