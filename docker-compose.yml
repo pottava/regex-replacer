@@ -1,0 +1,19 @@
+version: "2.1"
+
+services:
+
+  # docker-compose run --rm test
+  test:
+    image: ekidd/rust-musl-builder
+    command: cargo test
+    volumes:
+      - .:/home/rust/src
+      - $HOME/.cargo/registry:/home/rust/.cargo/registry
+
+  # docker-compose run --rm release-build
+  release-build:
+    image: ekidd/rust-musl-builder
+    command: cargo build --release
+    volumes:
+      - .:/home/rust/src
+      - $HOME/.cargo/registry:/home/rust/.cargo/registry

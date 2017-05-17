@@ -7,4 +7,6 @@ ENV DELIMITER=',' \
 
 ADD target/x86_64-unknown-linux-musl/release/regex-replacer /
 
+WORKDIR /app
+
 CMD ["/regex-replacer"]
