@@ -64,13 +64,13 @@ fn main() {
 
 #[test]
 fn env_default() {
-    assert_eq!(env_variable("@DUMMY@", "abc"), "abc");
+    assert_eq!(env_variable("@DUMMY-A@", "abc"), "abc");
 }
 
 #[test]
 fn read_env() {
-    env::set_var("@DUMMY@", "def");
-    assert_eq!(env_variable("@DUMMY@", "abc"), "def");
+    env::set_var("@DUMMY-B@", "def");
+    assert_eq!(env_variable("@DUMMY-B@", "abc"), "def");
 }
 
 #[test]
