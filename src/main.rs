@@ -6,6 +6,10 @@ use std::path::Path;
 use std::env;
 use regex::Regex;
 
+fn env_variable(key: &str, def_value: &str) -> String {
+    env::var(key).unwrap_or(String::from(def_value))
+}
+
 fn read_file<P: AsRef<Path>>(path: P) -> Result<Vec<String>, std::io::Error> {
     let f = File::open(path)?;
     let buf = BufReader::new(&f);
@@ -23,10 +27,10 @@ fn save_as<P: AsRef<Path>>(path: P, lines: &Vec<String>) -> Result<(), std::io::
 }
 
 fn main() {
-    let delimiter = env::var("DELIMITER").unwrap_or(String::from(","));
-    let replace_delimiter = env::var("REPLACE_DELIMITER").unwrap_or(String::from("="));
-    let files = env::var("FILES").unwrap_or(String::from(""));
-    let replaces = env::var("REPLACE").unwrap_or(String::from(""));
+    let delimiter = env_variable("DELIMITER", ",");
+    let replace_delimiter = env_variable("REPLACE_DELIMITER", "=");
+    let files = env_variable("FILES", "");
+    let replaces = env_variable("REPLACE", "");
 
     for path in files.split(&delimiter) {
         match read_file(&path) {
@@ -55,4 +59,25 @@ fn main() {
             Err(err) => println!("Replace failed: {}", err),
         }
     }
+}
+
+#[test]
+fn env_default() {
+    assert_eq!(env_variable("@DUMMY@", "abc"), "abc");
+}
+
+#[test]
+fn read_env() {
+    env::set_var("@DUMMY@", "def");
+    assert_eq!(env_variable("@DUMMY@", "abc"), "def");
+}
+
+#[test]
+fn can_open() {
+    assert!(read_file("/etc/hosts").is_ok());
+}
+
+#[test]
+fn cannot_open() {
+    assert!(read_file("/does-not.exist").is_err());
 }
